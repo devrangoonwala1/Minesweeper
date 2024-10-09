@@ -1,5 +1,11 @@
-package pkgSlUtils;
+/**
+ * Name: Dev Rangoonwala
+ * Date: 10/8/24
+ * Class: csc133 - 08
+ * Description: This class helps with making the openGl window so that it can be displayed on the screen which also depends on the height and width of how the window should be displayed.
+ */
 
+package pkgSlUtils;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
