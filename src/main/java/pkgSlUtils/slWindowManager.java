@@ -10,17 +10,18 @@ import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static pkgSlRenderer.slRenderEngine.my_wm;
 
 public class slWindowManager {
-    public static long glfw_win;
-    public static slWindowManager my_window = new slWindowManager();
+    private static long glfw_win;
+    private static slWindowManager my_window = new slWindowManager();
 
 
-    public static int[] getCurrentWindowSize(){
+    public int[] getCurrentWindowSize(){
         int[] size = new int[2];
+
         return size;
     }
+
 
     public static slWindowManager get() {
 
@@ -28,15 +29,16 @@ public class slWindowManager {
     }
 
     public void destroyGlfwWindow(){
-
+        glfwDestroyWindow(glfw_win);
+        glfwTerminate();
     }
 
     public void swapBuffers(){
-
+        glfwSwapBuffers(glfw_win);
     }
 
     public boolean isGlfwWindowClosed(){
-        return false;
+        return glfwWindowShouldClose(glfw_win);
     }
 
     public static long initGLFWWindow(int WIN_WIDTH, int WIN_HEIGHT, String w_title){
@@ -52,7 +54,7 @@ public class slWindowManager {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
-        glfw_win = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "CSUS CSC 133", NULL, NULL);
+        glfw_win = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, w_title, NULL, NULL);
 
         if (glfw_win == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -60,12 +62,6 @@ public class slWindowManager {
 
         updateContextToThis();
 
-        while (!glfwWindowShouldClose(glfw_win)) {
-            glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            glfwSwapBuffers(glfw_win);
-        }
 
         return glfw_win;
 
@@ -74,11 +70,11 @@ public class slWindowManager {
 
     public int[] getWindowSize(){
         int[] size = new int[2];
+
         return size;
     }
 
     public static void updateContextToThis(){
-        glfwWindowShouldClose(glfw_win);
         glfwMakeContextCurrent(glfw_win);
 
         GL.createCapabilities();
