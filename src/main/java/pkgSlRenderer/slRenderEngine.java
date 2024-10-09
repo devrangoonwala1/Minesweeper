@@ -1,3 +1,10 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 10/8/24
+ * Class: csc133 - 08
+ * Description: The slRenderEngine class helps with creating the circle that is then displayed on the screen, this is where the generateCircleSegmentVerties help make the triangle which can be created into a circle, the updateRandVertices all it does is help with generating the random coordinates and the random color of the circle, the render method is where pretty much everything is called out to make the program work.
+ */
+
 package pkgSlRenderer;
 
 import org.lwjgl.opengl.GL;
