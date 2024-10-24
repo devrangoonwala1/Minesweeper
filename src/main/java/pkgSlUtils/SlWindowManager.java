@@ -9,17 +9,14 @@ package pkgSlUtils;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class slWindowManager {
+public class SlWindowManager {
     private static long glfw_win;
-    private static slWindowManager my_window = new slWindowManager();
+    private static SlWindowManager my_window = new SlWindowManager();
 
 
     public int[] getCurrentWindowSize(){
@@ -29,7 +26,7 @@ public class slWindowManager {
     }
 
 
-    public static slWindowManager get() {
+    public static SlWindowManager get() {
 
         return my_window;
     }
@@ -84,7 +81,7 @@ public class slWindowManager {
         glfwMakeContextCurrent(glfw_win);
 
         GL.createCapabilities();
-        float CC_RED = 0.0f, CC_GREEN = 0.0f, CC_BLUE = 1.0f, CC_ALPHA = 1.0f;
+        float CC_RED = 0.0f, CC_GREEN = 0.0f, CC_BLUE = 0.0f, CC_ALPHA = 0.0f;
         glClearColor(CC_RED, CC_GREEN, CC_BLUE, CC_ALPHA);
     }
 
