@@ -1,6 +1,6 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 10/8/24
+ * Date: 10/25/24
  * Class: csc133 - 08
  * Description: This class helps with making the openGl window so that it can be displayed on the screen which also depends on the height and width of how the window should be displayed.
  */
@@ -14,9 +14,9 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class SlWindowManager {
+public class DRWindowManager {
     private static long glfw_win;
-    private static SlWindowManager my_window = new SlWindowManager();
+    private static DRWindowManager my_window = new DRWindowManager();
 
 
     public int[] getCurrentWindowSize(){
@@ -26,7 +26,7 @@ public class SlWindowManager {
     }
 
 
-    public static SlWindowManager get() {
+    public static DRWindowManager get() {
 
         return my_window;
     }
