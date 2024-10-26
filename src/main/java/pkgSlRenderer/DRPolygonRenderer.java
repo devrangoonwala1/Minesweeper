@@ -56,8 +56,8 @@ public class DRPolygonRenderer extends DRRenderer {
 
     public void render(float radius){
         int delay = 500;
-        int rows = (int)(height / (radius * 2.0f));
-        int cols = (int)(width / (radius * 2.0f));
+        int rows = (int)(height / (radius * height));
+        int cols = (int)(width / (radius * width));
         render(delay, rows, cols);
     }
 
