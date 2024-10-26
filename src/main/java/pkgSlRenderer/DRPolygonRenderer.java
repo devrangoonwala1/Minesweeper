@@ -1,14 +1,12 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 10/8/24
+ * Date: 10/25/24
  * Class: csc133 - 08
- * Description: The slRenderEngine class helps with creating the circle that is then displayed on the screen, this is where the generateCircleSegmentVerties help make the triangle which can be created into a circle, the updateRandVertices all it does is help with generating the random coordinates and the random color of the circle, the render method is where pretty much everything is called out to make the program work.
+ * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the drawPolygon method which draws the necessary shape of the polygon and the renderer
  */
 
 package pkgSlRenderer;
-import pkgDriver.SlSpot;
-import pkgSlUtils.SlWindowManager;
-import java.util.Random;
+import pkgSlUtils.DRWindowManager;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.opengl.GL11.*;
@@ -16,9 +14,9 @@ import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.glClear;
 
 
-public class SlPolygonRenderer extends SlRenderer{
+public class DRPolygonRenderer extends DRRenderer {
 
-    public void initOpenGL(SlWindowManager my_wm) {
+    public void initOpenGL(DRWindowManager my_wm) {
         this.my_wm = my_wm;
     }
 
