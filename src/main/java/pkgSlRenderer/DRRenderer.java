@@ -16,7 +16,7 @@ public abstract class DRRenderer {
     //global
     protected Random my_rand = new Random();
     protected static DRWindowManager my_wm;
-    protected int polygonVertices = 3;
+    protected int polygonVertices = 4;
     private final int polygonMaxVertice = 20;
 
     //drawPolygons
