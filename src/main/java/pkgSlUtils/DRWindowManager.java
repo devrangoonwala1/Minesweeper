@@ -85,4 +85,6 @@ public class DRWindowManager {
         glClearColor(CC_RED, CC_GREEN, CC_BLUE, CC_ALPHA);
     }
 
+
+
 }
