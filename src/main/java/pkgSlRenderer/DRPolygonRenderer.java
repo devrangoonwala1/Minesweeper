@@ -1,8 +1,8 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 10/25/24
+ * Date: 11/19/24
  * Class: csc133 - 08
- * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the drawPolygon method which draws the necessary shape of the polygon and the renderer
+ * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the drawPolygon method which draws the necessary shape of the polygon which is a square. Also in the render method is used to set random numbers from 0-1 to the live array and see which cells are alive, and it is also determined by the neighbor cells by the use of liveArray method and countNeighbors method. The render class also checks if a key is pressed such as 'r' which resets the board, and it also checks if either 'd' or 'i' is pressed which changes the frame delay.
  */
 
 package pkgSlRenderer;
