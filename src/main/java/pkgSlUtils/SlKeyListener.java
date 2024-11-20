@@ -1,3 +1,11 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 11/19/24
+ * Class: csc133 - 08
+ * Description: This SlKeyListener class has the methods so that the user can use the keyboard inputs where it can respond to the 3 keyevents which is in the DRPolygonRenderer class and this class has the methods that handles some of the events using the keyCallback(), isKeyPressed(), resetKeypressEvents() methods.
+ */
+
+
 package pkgSlUtils;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
