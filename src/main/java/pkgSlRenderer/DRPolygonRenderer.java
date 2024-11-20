@@ -6,13 +6,13 @@
  */
 
 package pkgSlRenderer;
-import pkgBackendEngine.pingPongClassDR;
 import pkgSlUtils.DRWindowManager;
+import pkgSlUtils.SlKeyListener;
 
 
 import java.util.Random;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.glClear;
@@ -20,6 +20,14 @@ import static org.lwjgl.opengl.GL11C.glClear;
 
 
 public class DRPolygonRenderer extends DRRenderer {
+    private boolean[][] live;
+    private boolean[][] next;
+    private boolean[][] temp;
+
+    private int numberOfRows;
+    private int numberOfCols;
+
+    boolean KeepRunning = true;
 
     public void initOpenGL(DRWindowManager my_wm) {
         this.my_wm = my_wm;
@@ -69,12 +77,21 @@ public class DRPolygonRenderer extends DRRenderer {
 
     @Override
     public void render(int FRAME_DELAY, int NUM_ROWS, int NUM_COLS){
-        boolean[][] live = new boolean[NUM_ROWS][NUM_COLS];
-        boolean[][] next = new boolean[NUM_ROWS][NUM_COLS];
-        int[][] temp;
+        live = new boolean[NUM_ROWS][NUM_COLS];
+        next = new boolean[NUM_ROWS][NUM_COLS];
 
 
+        numberOfRows = NUM_ROWS;
+        numberOfCols = NUM_COLS;
 
+
+        Random random = new Random();
+        for (int i = 0; i < NUM_ROWS; i++) {
+            System.out.println();
+            for (int j = 0; j < NUM_COLS; j++) {
+                live[i][j] = random.nextBoolean();
+            }
+        }
 
 
         float radius = 1.0f/Math.max(NUM_ROWS, NUM_COLS);
@@ -83,20 +100,6 @@ public class DRPolygonRenderer extends DRRenderer {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT);
             glBegin(GL_TRIANGLE_FAN);
-
-            float color1 = my_rand.nextFloat(2.0f) + 0.3f;
-            float color2 = my_rand.nextFloat(2.0f) + 0.3f;
-            float color3 = my_rand.nextFloat(2.0f) + 0.3f;
-            float color4 = my_rand.nextFloat(1.0f) + 0.3f;
-
-            Random random = new Random();
-            for (int i = 0; i < NUM_ROWS; i++) {
-                System.out.println();
-                for (int j = 0; j < NUM_COLS; j++) {
-                    live[i][j] = random.nextBoolean();
-                    //System.out.print(live[i][j] + " ");
-                }
-            }
 
 
             int row = 0;
@@ -112,7 +115,6 @@ public class DRPolygonRenderer extends DRRenderer {
                         glColor4f(0, 1, 0, 1);
                     }
                     else{
-                        //glColor4f(color1, color2, color3, color4);
                         glColor4f(1, 0, 0, 1);
                     }
                     drawPolygon(spacingX, spacingY, radius, polygonVertices);
@@ -122,14 +124,7 @@ public class DRPolygonRenderer extends DRRenderer {
             }
 
 
-
-
-            /*
-            polygonVertices++;
-            if(polygonVertices > getPolygonMaxVertice()){
-                polygonVertices = 3;
-            }
-             */
+            liveArray(NUM_ROWS, NUM_COLS);
 
 
             if (FRAME_DELAY > 0) {
@@ -140,7 +135,43 @@ public class DRPolygonRenderer extends DRRenderer {
                     Thread.currentThread().interrupt();
                 }
             }
+            else {
+                KeepRunning = false;
+            }
 
+
+            if (SlKeyListener.isKeyPressed(GLFW_KEY_D) ) {
+                KeepRunning = false;
+                if (FRAME_DELAY > 0){
+                    FRAME_DELAY -= 500;
+                    if (FRAME_DELAY < 0){
+                        FRAME_DELAY = 0;
+                    }
+                }
+                else if(FRAME_DELAY < 0 || FRAME_DELAY == 0){
+                    FRAME_DELAY = 0;
+                }
+                System.out.println("+++ Frame delay is now: " + FRAME_DELAY + " ms!");
+                KeepRunning = true;
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_D);
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
+            }
+            else if (SlKeyListener.isKeyPressed(GLFW_KEY_I) ) {
+                KeepRunning = false;
+                FRAME_DELAY += 500;
+                System.out.println("+++ Frame delay is now: " + FRAME_DELAY + " ms!");
+                KeepRunning = true;
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_I);
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
+            }
+            else if (SlKeyListener.isKeyPressed(GLFW_KEY_R) ) {
+                KeepRunning = false;
+                boardReset(NUM_ROWS, NUM_COLS);
+                System.out.println("Board Reset");
+                KeepRunning = true;
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_R);
+                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
+            }
 
 
             my_wm.swapBuffers();
@@ -149,6 +180,74 @@ public class DRPolygonRenderer extends DRRenderer {
         my_wm.destroyGlfwWindow();
 
     }
+
+
+
+    public void liveArray(int NUM_ROWS, int NUM_COLS){
+        int liveNeighbor;
+        for (int rows = 0; rows < NUM_ROWS; rows++){
+            for (int cols = 0; cols < NUM_COLS; cols++){
+                liveNeighbor = countNeightbors(rows, cols);
+
+                if (live[rows][cols] == true) {
+                    next[rows][cols] = (liveNeighbor == 2 || liveNeighbor == 3);
+                }
+                else{
+                    next[rows][cols] = (liveNeighbor == 3);
+                }
+            }
+        }
+        swap();
+    }
+
+
+    public int countNeightbors(int row, int col){
+        int count = 0;
+        int x = -1;
+        int nextRow = 1;
+        while (x <= nextRow){
+            int y = -1;
+            int nextCol = 1;
+            while (y <= nextCol){
+                if (!(x == 0 && y == 0)){
+                    int neighborRow = row + x;
+                    int neighborCol = col + y;
+                    if (neighborRow >= 0 && neighborRow < numberOfRows && neighborCol >= 0 && neighborCol < numberOfCols) {
+                        if (live[neighborRow][neighborCol]){
+                            count++;
+                        }
+                    }
+                }
+                y++;
+            }
+            x++;
+        }
+        return count;
+    }
+
+
+
+    public void swap(){
+        temp = live;
+        live = next;
+        next = temp;
+    }
+
+
+    public void boardReset(int rows, int cols){
+        int row = 0;
+        while (row < rows) {
+            int col = 0;
+            while (col < cols){
+                live[row][col] = my_rand.nextBoolean();
+                col++;
+            }
+            row++;
+        }
+    }
+
+
+
 
 }
 
