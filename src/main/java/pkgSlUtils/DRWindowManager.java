@@ -8,6 +8,7 @@
 package pkgSlUtils;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -17,6 +18,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class DRWindowManager {
     private static long glfw_win;
     private static DRWindowManager my_window = new DRWindowManager();
+    private static long window = 0;
 
 
     public int[] getCurrentWindowSize(){
@@ -44,6 +46,8 @@ public class DRWindowManager {
         return glfwWindowShouldClose(glfw_win);
     }
 
+
+
     public static long initGLFWWindow(int WIN_WIDTH, int WIN_HEIGHT, String w_title){
 
 
@@ -65,10 +69,19 @@ public class DRWindowManager {
 
         updateContextToThis();
 
+        glfwSetKeyCallback(glfw_win, SlKeyListener::keyCallback);
 
         return glfw_win;
 
 
+    }
+
+    SlKeyListener keyListener = new SlKeyListener();
+
+
+
+    public SlKeyListener getKeyListener() {
+        return keyListener;
     }
 
     public int[] getWindowSize(){
@@ -84,7 +97,6 @@ public class DRWindowManager {
         float CC_RED = 0.0f, CC_GREEN = 0.0f, CC_BLUE = 0.0f, CC_ALPHA = 0.0f;
         glClearColor(CC_RED, CC_GREEN, CC_BLUE, CC_ALPHA);
     }
-
 
 
 }
