@@ -6,6 +6,8 @@
  */
 
 package pkgSlRenderer;
+import org.joml.Vector2i;
+import org.joml.Vector4f;
 import pkgSlUtils.DRWindowManager;
 import pkgSlUtils.SlKeyListener;
 
@@ -77,13 +79,13 @@ public class DRPolygonRenderer extends DRRenderer {
 
     @Override
     public void render(int FRAME_DELAY, int NUM_ROWS, int NUM_COLS){
+        /*
         live = new boolean[NUM_ROWS][NUM_COLS];
         next = new boolean[NUM_ROWS][NUM_COLS];
 
 
         numberOfRows = NUM_ROWS;
         numberOfCols = NUM_COLS;
-
 
         Random random = new Random();
         for (int i = 0; i < NUM_ROWS; i++) {
@@ -92,6 +94,7 @@ public class DRPolygonRenderer extends DRRenderer {
                 live[i][j] = random.nextBoolean();
             }
         }
+         */
 
 
         float radius = 1.0f/Math.max(NUM_ROWS, NUM_COLS);
@@ -101,6 +104,9 @@ public class DRPolygonRenderer extends DRRenderer {
             glClear(GL_COLOR_BUFFER_BIT);
             glBegin(GL_TRIANGLE_FAN);
 
+            Vector4f Color_factor = new Vector4f(0.2f, 0.4f, 0.6f, 1.0f);
+
+            Vector2i vec = new Vector2i(-1, -1);
 
             int row = 0;
             while (row < NUM_ROWS){
@@ -111,12 +117,15 @@ public class DRPolygonRenderer extends DRRenderer {
                     float spacingX = getStartingPoint() + centeringCol;
                     float spacingY = getStartingPoint() + centeringRow;
 
+                    /*
                     if (live[row][col] == true) {
                         glColor4f(0, 1, 0, 1);
                     }
                     else{
                         glColor4f(1, 0, 0, 1);
                     }
+                     */
+
                     drawPolygon(spacingX, spacingY, radius, polygonVertices);
                     col++;
                 }
@@ -124,7 +133,7 @@ public class DRPolygonRenderer extends DRRenderer {
             }
 
 
-            liveArray(NUM_ROWS, NUM_COLS);
+            //liveArray(NUM_ROWS, NUM_COLS);
 
 
             if (FRAME_DELAY > 0) {
@@ -140,6 +149,7 @@ public class DRPolygonRenderer extends DRRenderer {
             }
 
 
+            /*
             if (SlKeyListener.isKeyPressed(GLFW_KEY_D) ) {
                 KeepRunning = false;
                 if (FRAME_DELAY > 0){
@@ -172,6 +182,7 @@ public class DRPolygonRenderer extends DRRenderer {
                 SlKeyListener.resetKeypressEvent(GLFW_KEY_R);
                 SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
             }
+             */
 
 
             my_wm.swapBuffers();
