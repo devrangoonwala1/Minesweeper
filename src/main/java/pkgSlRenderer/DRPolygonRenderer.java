@@ -6,6 +6,7 @@
  */
 
 package pkgSlRenderer;
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import pkgSlUtils.DRWindowManager;
@@ -18,7 +19,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.glClear;
-
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform4f;
 
 
 public class DRPolygonRenderer extends DRRenderer {
@@ -30,6 +32,9 @@ public class DRPolygonRenderer extends DRRenderer {
     private int numberOfCols;
 
     boolean KeepRunning = true;
+
+    float[] clearColor = new float[0];
+    SlShaderObject shaderObj;
 
     public void initOpenGL(DRWindowManager my_wm) {
         this.my_wm = my_wm;
@@ -77,6 +82,7 @@ public class DRPolygonRenderer extends DRRenderer {
     }
 
 
+
     @Override
     public void render(int FRAME_DELAY, int NUM_ROWS, int NUM_COLS){
         /*
@@ -96,17 +102,35 @@ public class DRPolygonRenderer extends DRRenderer {
         }
          */
 
+        float current_green = 1.0f;
+        Vector4f COLOR_FACTOR = new Vector4f(0.0f, 0.0f, 0.6f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        SlCamera camera = new SlCamera();
+        Vector2i vec = new Vector2i(-1, -1);
+
+        //Matrix4f projectionMatrix = camera.getProjectionMatrix();
+        //Matrix4f viewMatrix = camera.getViewMatrix();
+
+        shaderObj = new SlShaderObject("vs_texture_1.glsl", "fs_texture_1.glsl");
+        shaderObj.compile_shader();
+        shaderObj.set_shader_program();
+
 
         float radius = 1.0f/Math.max(NUM_ROWS, NUM_COLS);
 
+
         do{
             glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(0.5f, 0.2f, 0.2f, 1.0f);
+            //glClear(GL_COLOR_BUFFER_BIT);
             glBegin(GL_TRIANGLE_FAN);
 
-            Vector4f Color_factor = new Vector4f(0.2f, 0.4f, 0.6f, 1.0f);
+            shaderObj.loadMatrix4f("uProjMatrix", camera.getProjectionMatrix());
+            shaderObj.loadMatrix4f("uViewMatrix", camera.getViewMatrix());
+            shaderObj.loadVector4f("COLOR_FACTOR", COLOR_FACTOR);
 
-            Vector2i vec = new Vector2i(-1, -1);
+
+
 
             int row = 0;
             while (row < NUM_ROWS){
