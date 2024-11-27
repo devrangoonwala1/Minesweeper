@@ -1,3 +1,11 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 11/27/24
+ * Class: csc133 - 08
+ * Description: This is the SlCamera class which is used to set the position of the camera by using the x, y, z vectors.
+ */
+
+
 package pkgSlRenderer;
 
 import org.joml.Matrix4f;
@@ -31,11 +39,11 @@ public class SlCamera {
         return viewMatrix;
     }
 
-    public void updateProjection(){
+    private void updateProjection(){
         projectionMatrix.identity().ortho(-1.0f, 1.0f, -1.0f,1.0f, 0.1f, 100.0f);
     }
 
-    public void updateView() {
+    private void updateView() {
         viewMatrix.identity().lookAt(lookAt, lookFrom, lookUp);
     }
 
