@@ -1,6 +1,6 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 11/19/24
+ * Date: 11/27/24
  * Class: csc133 - 08
  * Description: This class helps with making the openGl window so that it can be displayed on the screen which also depends on the height and width of how the window should be displayed. We also use the glfwSetKeyCallback so that the window can handle the keyboard input events.
  */
