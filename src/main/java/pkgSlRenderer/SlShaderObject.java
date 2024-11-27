@@ -1,3 +1,10 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 11/27/24
+ * Class: csc133 - 08
+ * Description: The SlShaderObject is used to create both the vertex shader and the fragment shader and help read the values from the shader file in the assets for both the fragment and vertex shaders
+ */
+
 package pkgSlRenderer;
 
 import org.joml.Matrix4f;
