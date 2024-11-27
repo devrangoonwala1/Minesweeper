@@ -9,29 +9,28 @@ package pkgSlRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import pkgSlUtils.DRWindowManager;
 import pkgSlUtils.SlKeyListener;
 
 
+import java.nio.FloatBuffer;
 import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11C.glClear;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform4f;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 
 public class DRPolygonRenderer extends DRRenderer {
-    private boolean[][] live;
-    private boolean[][] next;
-    private boolean[][] temp;
 
-    private int numberOfRows;
-    private int numberOfCols;
 
     boolean KeepRunning = true;
+
 
     float[] clearColor = new float[0];
     SlShaderObject shaderObj;
@@ -40,30 +39,6 @@ public class DRPolygonRenderer extends DRRenderer {
         this.my_wm = my_wm;
     }
 
-
-    private void drawPolygon(float x, float y, float radius, int polygonVertices) {
-
-        float xCenter = x * radius;
-        float yCenter = y * radius;
-        float delTheta = 2.0f * (float) Math.PI / polygonVertices;
-        float theta = 0.0f;
-
-
-        glBegin(GL_TRIANGLE_FAN);
-
-        int i=0;
-        while (i < polygonVertices){
-            float radiusScalingX = radius * (float)Math.cos(theta + Math.PI/4);
-            float radiusScalingY = radius * (float)Math.sin(theta + Math.PI/4);
-            glVertex3f((x + (radiusScalingX + (xCenter))),
-                    (y + (radiusScalingY + (yCenter))),
-                    z);
-            theta = delTheta + theta;
-            i++;
-        }
-        glEnd();
-
-    }
 
 
     public void render(){
@@ -83,81 +58,134 @@ public class DRPolygonRenderer extends DRRenderer {
 
 
 
+    private float[] renderTiles(int NUM_ROWS, int NUM_COLS, float spacing){
+        int square;
+        int vertex;
+        float[] vertices;
+        square = NUM_ROWS * NUM_COLS;
+        vertex = square * 6;
+        vertices = new float[vertex * 3];
+
+        float widthOfTileMax;
+        float heightOfTileMax;
+        widthOfTileMax = 2.0f / NUM_COLS;
+        heightOfTileMax = 2.0f / NUM_ROWS;
+
+        float spaceRows;
+        float spaceCols;
+        spaceRows = widthOfTileMax * spacing;
+        spaceCols = heightOfTileMax * spacing;
+
+        float widthTiles;
+        float heightTiles;
+        widthTiles = widthOfTileMax - spaceRows;
+        heightTiles = heightOfTileMax - spaceCols;
+
+
+        int index = 0;
+        float x0, x1, x2, x3;
+        float y0, y1, y2, y3;
+        int i = 0;
+        while(i < NUM_ROWS){
+            int j = 0;
+            while(j < NUM_COLS){
+                x0 = -1.0f + j * widthOfTileMax + spaceRows / 2.0f;
+                y0 = -1.0f + i * heightOfTileMax + spaceCols / 2.0f;
+                x1 = x0;
+                y1 = y0 + heightTiles;
+                x2 = x0 + widthTiles;
+                y2 = y1;
+                x3 = x2;
+                y3 = y0;
+
+                //Triangle 1:
+                vertices[index++] = x0;
+                vertices[index++] = y0;
+                vertices[index++] = 0.0f;
+
+                vertices[index++] = x1;
+                vertices[index++] = y1;
+                vertices[index++] = 0.0f;
+
+                vertices[index++] = x2;
+                vertices[index++] = y2;
+                vertices[index++] = 0.0f;
+
+                //Triangle 2:
+                vertices[index++] = x2;
+                vertices[index++] = y2;
+                vertices[index++] = 0.0f;
+
+                vertices[index++] = x3;
+                vertices[index++] = y3;
+                vertices[index++] = 0.0f;
+
+                vertices[index++] = x0;
+                vertices[index++] = y0;
+                vertices[index++] = 0.0f;
+                j++;
+            }
+            i++;
+        }
+        return vertices;
+
+    }
+
+
+
+
     @Override
     public void render(int FRAME_DELAY, int NUM_ROWS, int NUM_COLS){
-        /*
-        live = new boolean[NUM_ROWS][NUM_COLS];
-        next = new boolean[NUM_ROWS][NUM_COLS];
+        float space = 0.2f;
+        float[] vertices = renderTiles(NUM_ROWS, NUM_COLS, space);
 
 
-        numberOfRows = NUM_ROWS;
-        numberOfCols = NUM_COLS;
+        FloatBuffer vertex = BufferUtils.createFloatBuffer(vertices.length);
+        vertex.put(vertices).flip();
 
-        Random random = new Random();
-        for (int i = 0; i < NUM_ROWS; i++) {
-            System.out.println();
-            for (int j = 0; j < NUM_COLS; j++) {
-                live[i][j] = random.nextBoolean();
-            }
-        }
-         */
+        int vao = glGenVertexArrays();
+        glBindVertexArray(vao);
+
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3*Float.BYTES, 0);
+        glEnableVertexAttribArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+
 
         float current_green = 1.0f;
-        Vector4f COLOR_FACTOR = new Vector4f(0.0f, 0.0f, 0.6f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
         SlCamera camera = new SlCamera();
-        Vector2i vec = new Vector2i(-1, -1);
+        Vector4f COLOR_FACTOR = new Vector4f(0.0f, 0.0f, 0.6f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
 
-        //Matrix4f projectionMatrix = camera.getProjectionMatrix();
-        //Matrix4f viewMatrix = camera.getViewMatrix();
 
-        shaderObj = new SlShaderObject("vs_texture_1.glsl", "fs_texture_1.glsl");
-        shaderObj.compile_shader();
+        shaderObj = new SlShaderObject("assets/shaders/vs_texture_1.glsl", "assets/shaders/fs_texture_1.glsl");
         shaderObj.set_shader_program();
 
+        shaderObj.loadMatrix4f("uProjMatrix", camera.getProjectionMatrix());
+        shaderObj.loadMatrix4f("uViewMatrix", camera.getViewMatrix());
+        shaderObj.loadVector4f("COLOR_FACTOR", COLOR_FACTOR);
 
-        float radius = 1.0f/Math.max(NUM_ROWS, NUM_COLS);
 
 
         do{
             glfwPollEvents();
-            glClearColor(0.5f, 0.2f, 0.2f, 1.0f);
-            //glClear(GL_COLOR_BUFFER_BIT);
-            glBegin(GL_TRIANGLE_FAN);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-            shaderObj.loadMatrix4f("uProjMatrix", camera.getProjectionMatrix());
-            shaderObj.loadMatrix4f("uViewMatrix", camera.getViewMatrix());
-            shaderObj.loadVector4f("COLOR_FACTOR", COLOR_FACTOR);
+            shaderObj.set_shader_program();
 
 
+            glBindVertexArray(vao);
+            glDrawArrays(GL_TRIANGLES, 0, NUM_ROWS * NUM_COLS * 9);
+            glBindVertexArray(0);
 
-
-            int row = 0;
-            while (row < NUM_ROWS){
-                int col = 0;
-                while (col < NUM_COLS) {
-                    float centeringRow = (2.0f / (NUM_ROWS + 1)) * (row + 1);
-                    float centeringCol = (2.0f / (NUM_COLS + 1)) * (col + 1);
-                    float spacingX = getStartingPoint() + centeringCol;
-                    float spacingY = getStartingPoint() + centeringRow;
-
-                    /*
-                    if (live[row][col] == true) {
-                        glColor4f(0, 1, 0, 1);
-                    }
-                    else{
-                        glColor4f(1, 0, 0, 1);
-                    }
-                     */
-
-                    drawPolygon(spacingX, spacingY, radius, polygonVertices);
-                    col++;
-                }
-                row++;
-            }
-
-
-            //liveArray(NUM_ROWS, NUM_COLS);
+            my_wm.swapBuffers();
 
 
             if (FRAME_DELAY > 0) {
@@ -172,114 +200,13 @@ public class DRPolygonRenderer extends DRRenderer {
                 KeepRunning = false;
             }
 
-
-            /*
-            if (SlKeyListener.isKeyPressed(GLFW_KEY_D) ) {
-                KeepRunning = false;
-                if (FRAME_DELAY > 0){
-                    FRAME_DELAY -= 500;
-                    if (FRAME_DELAY < 0){
-                        FRAME_DELAY = 0;
-                    }
-                }
-                else if(FRAME_DELAY < 0 || FRAME_DELAY == 0){
-                    FRAME_DELAY = 0;
-                }
-                System.out.println("+++ Frame delay is now: " + FRAME_DELAY + " ms!");
-                KeepRunning = true;
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_D);
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
-            }
-            else if (SlKeyListener.isKeyPressed(GLFW_KEY_I) ) {
-                KeepRunning = false;
-                FRAME_DELAY += 500;
-                System.out.println("+++ Frame delay is now: " + FRAME_DELAY + " ms!");
-                KeepRunning = true;
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_I);
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
-            }
-            else if (SlKeyListener.isKeyPressed(GLFW_KEY_R) ) {
-                KeepRunning = false;
-                boardReset(NUM_ROWS, NUM_COLS);
-                System.out.println("Board Reset");
-                KeepRunning = true;
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_R);
-                SlKeyListener.resetKeypressEvent(GLFW_KEY_LEFT_SHIFT);
-            }
-             */
-
-
-            my_wm.swapBuffers();
-
         } while (!my_wm.isGlfwWindowClosed());
+        glDeleteBuffers(vbo);
+        glDeleteVertexArrays(vao);
         my_wm.destroyGlfwWindow();
 
     }
 
-
-
-    public void liveArray(int NUM_ROWS, int NUM_COLS){
-        int liveNeighbor;
-        for (int rows = 0; rows < NUM_ROWS; rows++){
-            for (int cols = 0; cols < NUM_COLS; cols++){
-                liveNeighbor = countNeightbors(rows, cols);
-
-                if (live[rows][cols] == true) {
-                    next[rows][cols] = (liveNeighbor == 2 || liveNeighbor == 3);
-                }
-                else{
-                    next[rows][cols] = (liveNeighbor == 3);
-                }
-            }
-        }
-        swap();
-    }
-
-
-    public int countNeightbors(int row, int col){
-        int count = 0;
-        int x = -1;
-        int nextRow = 1;
-        while (x <= nextRow){
-            int y = -1;
-            int nextCol = 1;
-            while (y <= nextCol){
-                if (!(x == 0 && y == 0)){
-                    int neighborRow = row + x;
-                    int neighborCol = col + y;
-                    if (neighborRow >= 0 && neighborRow < numberOfRows && neighborCol >= 0 && neighborCol < numberOfCols) {
-                        if (live[neighborRow][neighborCol]){
-                            count++;
-                        }
-                    }
-                }
-                y++;
-            }
-            x++;
-        }
-        return count;
-    }
-
-
-
-    public void swap(){
-        temp = live;
-        live = next;
-        next = temp;
-    }
-
-
-    public void boardReset(int rows, int cols){
-        int row = 0;
-        while (row < rows) {
-            int col = 0;
-            while (col < cols){
-                live[row][col] = my_rand.nextBoolean();
-                col++;
-            }
-            row++;
-        }
-    }
 
 
 
