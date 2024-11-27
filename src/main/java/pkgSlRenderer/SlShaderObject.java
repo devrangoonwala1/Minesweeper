@@ -5,16 +5,19 @@ import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class SlShaderObject {
 
-    int shaderprogram = glCreateProgram();
+    private int shaderprogram;
 
     public SlShaderObject(String vsFile, String fsFile) {
-        String vs_shader_program_string = vsFile;
+        String vs_shader_program_string = readStringFile(vsFile);
         shaderprogram = glCreateProgram();
 
         int vs = glCreateShader(GL_VERTEX_SHADER);
@@ -24,13 +27,28 @@ public class SlShaderObject {
 
         int fs = glCreateShader(GL_FRAGMENT_SHADER);
 
-        String fs_shader_program_string = fsFile;
+        String fs_shader_program_string = readStringFile(fsFile);
         glShaderSource(fs, fs_shader_program_string);
         glCompileShader(fs);
         glAttachShader(shaderprogram, fs);
 
         glLinkProgram(shaderprogram);
 
+        glDeleteShader(vs);
+        glDeleteShader(fs);
+    }
+
+
+    private String readStringFile(String fileInResources) {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(fileInResources)) {
+            if (in == null) {
+                throw new RuntimeException("shader file has not been found: " + fileInResources);
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -52,14 +70,11 @@ public class SlShaderObject {
         glUseProgram(shaderprogram);
     }
 
-    public void compile_shader() {
-        glUseProgram(shaderprogram);
+    public int get_shader_program() {
+        return shaderprogram;
     }
 
-    public void colorOfSquare(){
-        int uniformColorSquare = glGetUniformLocation(shaderprogram, "COLOR_FACTOR");
-        glUniform4f(uniformColorSquare, 0.5f, 0.2f, 0.0f, 1.0f);
 
-    }
+
 }
 
