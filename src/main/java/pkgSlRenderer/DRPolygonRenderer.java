@@ -1,8 +1,8 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 11/19/24
+ * Date: 11/27/24
  * Class: csc133 - 08
- * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the drawPolygon method which draws the necessary shape of the polygon which is a square. Also in the render method is used to set random numbers from 0-1 to the live array and see which cells are alive, and it is also determined by the neighbor cells by the use of liveArray method and countNeighbors method. The render class also checks if a key is pressed such as 'r' which resets the board, and it also checks if either 'd' or 'i' is pressed which changes the frame delay.
+ * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the renderTile method which is used to make the necessary shape of the two triangles which then is a square. The render method uses the programmable pipeline to then draw a square and with the use of the shaders file which include the fragment shader and vertex shader it is able to set the colors inside the squares.
  */
 
 package pkgSlRenderer;
@@ -28,10 +28,6 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class DRPolygonRenderer extends DRRenderer {
 
-
-    boolean KeepRunning = true;
-
-    SlShaderObject shaderObj;
 
     public void initOpenGL(DRWindowManager my_wm) {
         this.my_wm = my_wm;
@@ -156,10 +152,8 @@ public class DRPolygonRenderer extends DRRenderer {
 
 
 
-        float current_green = 1.0f;
         SlCamera camera = new SlCamera();
         Vector4f COLOR_FACTOR = new Vector4f(0.0f, 0.0f, 0.6f, 1.0f);
-        //glClear(GL_COLOR_BUFFER_BIT);
 
 
         shaderObj = new SlShaderObject("assets/shaders/vs_texture_1.glsl", "assets/shaders/fs_texture_1.glsl");
