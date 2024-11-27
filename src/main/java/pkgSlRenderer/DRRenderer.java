@@ -1,6 +1,6 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 11/19/24
+ * Date: 11/27/24
  * Class: csc133 - 08
  * Description: This DRRenderer class is just an abstract class where the subclass or child classes can extend off of this renderer class
  */
@@ -18,6 +18,7 @@ public abstract class DRRenderer {
     protected static DRWindowManager my_wm;
     protected int polygonVertices = 4;
     private final int polygonMaxVertice = 20;
+    protected boolean KeepRunning = true;
 
     //drawPolygons
     protected final float z = 0.0f;
@@ -26,6 +27,8 @@ public abstract class DRRenderer {
     protected final float width = DRSpot.WIN_WIDTH;
     protected final float height = DRSpot.WIN_HEIGHT;
     private final float startingPoint = -1.0f;
+
+    protected static SlShaderObject shaderObj;
 
 
     public int getPolygonMaxVertice() {
