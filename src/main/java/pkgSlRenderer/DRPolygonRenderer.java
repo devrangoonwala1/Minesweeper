@@ -31,8 +31,6 @@ public class DRPolygonRenderer extends DRRenderer {
 
     boolean KeepRunning = true;
 
-
-    float[] clearColor = new float[0];
     SlShaderObject shaderObj;
 
     public void initOpenGL(DRWindowManager my_wm) {
