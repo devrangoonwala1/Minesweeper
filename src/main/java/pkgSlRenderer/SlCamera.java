@@ -12,7 +12,7 @@ public class SlCamera {
 
     public SlCamera() {
         lookFrom = new Vector3f(0.0f, 0.0f, 0.0f);
-        lookAt = new Vector3f(0.0f, 0.0f, 1.0f);
+        lookAt = new Vector3f(0.0f, 0.0f, -1.0f);
         lookUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
         this.viewMatrix = new Matrix4f();
