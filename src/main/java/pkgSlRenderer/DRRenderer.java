@@ -28,7 +28,7 @@ public abstract class DRRenderer {
     protected final float height = DRSpot.WIN_HEIGHT;
     private final float startingPoint = -1.0f;
 
-    protected static SlShaderObject shaderObj;
+    protected static DRShaderObject shaderObj;
 
 
     public int getPolygonMaxVertice() {
