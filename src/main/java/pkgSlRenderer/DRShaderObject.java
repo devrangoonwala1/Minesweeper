@@ -2,7 +2,7 @@
  * Name: Dev Rangoonwala
  * Date: 11/27/24
  * Class: csc133 - 08
- * Description: The SlShaderObject is used to create both the vertex shader and the fragment shader and help read the values from the shader file in the assets for both the fragment and vertex shaders
+ * Description: The DRShaderObject is used to create both the vertex shader and the fragment shader and help read the values from the shader file in the assets for both the fragment and vertex shaders
  */
 
 package pkgSlRenderer;
@@ -10,20 +10,18 @@ package pkgSlRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL20;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class SlShaderObject {
+public class DRShaderObject {
 
     private int shaderprogram;
 
-    public SlShaderObject(String vsFile, String fsFile) {
+    public DRShaderObject(String vsFile, String fsFile) {
         String vs_shader_program_string = readStringFile(vsFile);
         shaderprogram = glCreateProgram();
 
