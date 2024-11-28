@@ -6,16 +6,12 @@
  */
 
 package pkgSlRenderer;
-import org.joml.Matrix4f;
-import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import pkgSlUtils.DRWindowManager;
-import pkgSlUtils.SlKeyListener;
 
 
 import java.nio.FloatBuffer;
-import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -79,6 +75,7 @@ public class DRPolygonRenderer extends DRRenderer {
         int index = 0;
         float x0, x1, x2, x3;
         float y0, y1, y2, y3;
+        float z = 0.0f;
         int i = 0;
         while(i < NUM_ROWS){
             int j = 0;
@@ -95,28 +92,28 @@ public class DRPolygonRenderer extends DRRenderer {
                 //Triangle 1:
                 vertices[index++] = x0;
                 vertices[index++] = y0;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
 
                 vertices[index++] = x1;
                 vertices[index++] = y1;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
 
                 vertices[index++] = x2;
                 vertices[index++] = y2;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
 
                 //Triangle 2:
                 vertices[index++] = x2;
                 vertices[index++] = y2;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
 
                 vertices[index++] = x3;
                 vertices[index++] = y3;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
 
                 vertices[index++] = x0;
                 vertices[index++] = y0;
-                vertices[index++] = 0.0f;
+                vertices[index++] = z;
                 j++;
             }
             i++;
@@ -144,19 +141,30 @@ public class DRPolygonRenderer extends DRRenderer {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3*Float.BYTES, 0);
-        glEnableVertexAttribArray(0);
+        int index=0;
+        int size = 3;
+        boolean normalized = false;
+        int stride = 3*Float.BYTES;
+        int pointer = 0;
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride, pointer);
+        glEnableVertexAttribArray(index);
+
+        int buffer = 0;
+        glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glBindVertexArray(0);
 
 
 
-        SlCamera camera = new SlCamera();
-        Vector4f COLOR_FACTOR = new Vector4f(0.0f, 0.0f, 0.6f, 1.0f);
+        DRCamera camera = new DRCamera();
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.6f;
+        float w = 1.0f;
+        Vector4f COLOR_FACTOR = new Vector4f(x, y, z, w);
 
 
-        shaderObj = new SlShaderObject("assets/shaders/vs_texture_1.glsl", "assets/shaders/fs_texture_1.glsl");
+        shaderObj = new DRShaderObject("assets/shaders/vs_texture_1.glsl", "assets/shaders/fs_texture_1.glsl");
         shaderObj.set_shader_program();
 
         shaderObj.loadMatrix4f("uProjMatrix", camera.getProjectionMatrix());
@@ -167,14 +175,20 @@ public class DRPolygonRenderer extends DRRenderer {
 
         do{
             glfwPollEvents();
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            float red = 0.0f;
+            float green = 0.0f;
+            float blue = 0.0f;
+            float alpha = 1.0f;
+            glClearColor(red, green, blue, alpha);
             glClear(GL_COLOR_BUFFER_BIT);
 
             shaderObj.set_shader_program();
 
+            int first = 0;
+            int count = NUM_ROWS * NUM_COLS * 9;
 
             glBindVertexArray(vao);
-            glDrawArrays(GL_TRIANGLES, 0, NUM_ROWS * NUM_COLS * 9);
+            glDrawArrays(GL_TRIANGLES, first, count);
             glBindVertexArray(0);
 
             my_wm.swapBuffers();
