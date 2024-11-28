@@ -8,7 +8,6 @@
 package pkgSlUtils;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -69,18 +68,18 @@ public class DRWindowManager {
 
         updateContextToThis();
 
-        glfwSetKeyCallback(glfw_win, SlKeyListener::keyCallback);
+        glfwSetKeyCallback(glfw_win, DRKeyListener::keyCallback);
 
         return glfw_win;
 
 
     }
 
-    SlKeyListener keyListener = new SlKeyListener();
+    DRKeyListener keyListener = new DRKeyListener();
 
 
 
-    public SlKeyListener getKeyListener() {
+    public DRKeyListener getKeyListener() {
         return keyListener;
     }
 
