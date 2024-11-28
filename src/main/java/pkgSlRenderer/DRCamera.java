@@ -2,7 +2,7 @@
  * Name: Dev Rangoonwala
  * Date: 11/27/24
  * Class: csc133 - 08
- * Description: This is the SlCamera class which is used to set the position of the camera by using the x, y, z vectors.
+ * Description: This is the DRCamera class which is used to set the position of the camera by using the x, y, z vectors.
  */
 
 
@@ -11,14 +11,14 @@ package pkgSlRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class SlCamera {
+public class DRCamera {
     private Vector3f lookFrom;
     private Vector3f lookAt;
     private Vector3f lookUp;
     private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
 
-    public SlCamera() {
+    public DRCamera() {
         lookFrom = new Vector3f(0.0f, 0.0f, 0.0f);
         lookAt = new Vector3f(0.0f, 0.0f, -1.0f);
         lookUp = new Vector3f(0.0f, 1.0f, 0.0f);
