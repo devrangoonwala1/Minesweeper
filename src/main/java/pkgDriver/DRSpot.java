@@ -8,5 +8,6 @@ package pkgDriver;
 
 public class DRSpot {
     public static final int WIN_WIDTH = 800;
-    public static final int WIN_HEIGHT  = 800;
+    public static final int WIN_HEIGHT = 800;
 }
+
