@@ -8,6 +8,7 @@
 package pkgSlRenderer;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
+import pkgBackendEngine.SIMSBoard;
 import pkgSlUtils.DRWindowManager;
 
 
@@ -170,6 +171,9 @@ public class DRPolygonRenderer extends DRRenderer {
         shaderObj.loadMatrix4f("uProjMatrix", camera.getProjectionMatrix());
         shaderObj.loadMatrix4f("uViewMatrix", camera.getViewMatrix());
         shaderObj.loadVector4f("COLOR_FACTOR", COLOR_FACTOR);
+
+        int maxMine = 14;
+        SIMSBoard board = new SIMSBoard(NUM_ROWS, NUM_COLS, maxMine);
 
 
 
