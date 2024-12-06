@@ -7,8 +7,17 @@ public class CellData {
     private int cell_score;
 
     public CellData(SlSpot.CELL_TYPE type){
+        this.status = SlSpot.CELL_STATUS.NOT_EXPOSED;
         this.type = type;
         this.cell_score = 0;
+    }
+
+    public CellData[][] getMs_board() {
+        return ms_board;
+    }
+
+    public void setMs_board(CellData[][] ms_board) {
+        this.ms_board = ms_board;
     }
 
     public SlSpot.CELL_TYPE getType(){
