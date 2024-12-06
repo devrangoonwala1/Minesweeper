@@ -68,20 +68,31 @@ public class DRWindowManager {
 
         updateContextToThis();
 
-        glfwSetKeyCallback(glfw_win, DRKeyListener::keyCallback);
+        //glfwSetKeyCallback(glfw_win, DRKeyListener::keyCallback);
+        glfwSetMouseButtonCallback(glfw_win, XYMouseListener::mouseButtonCallback);
+        glfwSetCursorPosCallback(glfw_win, XYMouseListener::mousePosCallback);
+
 
         return glfw_win;
 
 
     }
 
-    DRKeyListener keyListener = new DRKeyListener();
+    XYMouseListener mouseListener = XYMouseListener.get();
 
+    public XYMouseListener getMouseListener() {
+        return mouseListener;
+    }
+
+
+    DRKeyListener keyListener = new DRKeyListener();
 
 
     public DRKeyListener getKeyListener() {
         return keyListener;
     }
+
+
 
     public int[] getWindowSize(){
         int[] size = new int[2];
