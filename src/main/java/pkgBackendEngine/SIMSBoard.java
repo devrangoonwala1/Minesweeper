@@ -103,6 +103,11 @@ public class SIMSBoard {
         return gameActive;
     }
 
+    public void changeGameActive(boolean gameActive){
+        this.gameActive = gameActive;
+    }
+
+
     public void printCellScore(){
         for (int row = 0; row < ROWS; row++) {
             System.out.println("");
@@ -132,6 +137,15 @@ public class SIMSBoard {
 
     public int getCurrentScore(){
         return current_score;
+    }
+
+    public void setCurrentScore(int current_score){
+        this.current_score = current_score;
+    }
+
+
+    public CellData[][] getMs_Board(){
+        return ms_board;
     }
 
 
