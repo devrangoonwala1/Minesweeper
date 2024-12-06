@@ -8,8 +8,11 @@
 package pkgSlRenderer;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
+import pkgBackendEngine.CellData;
 import pkgBackendEngine.SIMSBoard;
+import pkgBackendEngine.SlSpot;
 import pkgSlUtils.DRWindowManager;
+import pkgSlUtils.XYMouseListener;
 
 
 import java.nio.FloatBuffer;
@@ -147,7 +150,6 @@ public class DRPolygonRenderer extends DRRenderer {
         boolean normalized = false;
         int stride = 3*Float.BYTES;
         int pointer = 0;
-
         glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride, pointer);
         glEnableVertexAttribArray(index);
 
@@ -195,20 +197,65 @@ public class DRPolygonRenderer extends DRRenderer {
             glDrawArrays(GL_TRIANGLES, first, count);
             glBindVertexArray(0);
 
-            my_wm.swapBuffers();
 
 
-            if (FRAME_DELAY > 0) {
-                try {
-                    Thread.sleep(FRAME_DELAY);
+            if(XYMouseListener.mouseButtonDown(0) && board.isGameActive()){
+                float XM = XYMouseListener.getX();
+                float YM = XYMouseListener.getY();
 
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                //System.out.println("mouse pressed: " + "XM: " + XM + " YM: " + YM);
+                XYMouseListener.mouseButtonDownReset(0);
+
+
+                float rowX = (XM / width) * 2.0f -1.0f;
+                float colY = 1.0f - (YM / height) * 2.0f;
+
+                float maxTileWidth = 2.0f / NUM_COLS;
+                float maxTileHeight = 2.0f / NUM_ROWS;
+
+                int colIndices = (int)((rowX + 1.0f)/maxTileWidth);
+                int rowIndices = (int)((colY + 1.0f)/maxTileHeight);
+
+                if (colIndices < 0 || colIndices >= NUM_COLS || rowIndices < 0 || rowIndices >= NUM_ROWS) {
+                    continue;
                 }
+
+                float tileLeftSideX = -1.0f + colIndices * maxTileWidth + (maxTileWidth * space) / 2.0f;
+                float tileBottomSideY = -1.0f + rowIndices * maxTileHeight + (maxTileHeight * space) / 2.0f;
+                float tileRightSideX = tileLeftSideX + maxTileWidth - (maxTileWidth * space);
+                float tileTopSideY = tileBottomSideY + maxTileHeight - (maxTileHeight * space);
+
+                CellData[][] ms_board = board.getMs_Board();
+                int rowClick = NUM_ROWS - 1 - rowIndices;
+                int colClick = colIndices;
+                CellData unit = ms_board[rowClick][colClick];
+
+                if (rowX >= tileLeftSideX && rowX <= tileRightSideX && colY >= tileBottomSideY && colY <= tileTopSideY) {
+
+                    if (unit.getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED) {
+                        unit.setStatus(SlSpot.CELL_STATUS.EXPOSED);
+                        if (unit.getType() == SlSpot.CELL_TYPE.MINE) {
+                            board.changeGameActive(false);
+                            for (int row = 0; row < NUM_ROWS; row++) {
+                                for (int col = 0; col < NUM_COLS; col++) {
+                                    ms_board[row][col].setStatus(SlSpot.CELL_STATUS.EXPOSED);
+                                }
+                            }
+                            System.out.printf("\nMouse click at: (%d, %d) Score: %d", rowClick, colClick, board.getCurrentScore());
+                        } else {
+                            int score = board.getCurrentScore() + unit.getCell_score();
+                            board.setCurrentScore(score);
+                            System.out.printf("\nMouse click at: (%d, %d) Score: %d", rowClick, colClick, score);
+                        }
+                    }
+                }
+
+
             }
-            else {
-                KeepRunning = false;
-            }
+
+
+
+            my_wm.swapBuffers();
 
         } while (!my_wm.isGlfwWindowClosed());
         glDeleteBuffers(vbo);
@@ -216,7 +263,6 @@ public class DRPolygonRenderer extends DRRenderer {
         my_wm.destroyGlfwWindow();
 
     }
-
 
 
 
