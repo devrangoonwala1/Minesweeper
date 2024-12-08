@@ -27,13 +27,15 @@ import static org.lwjgl.opengl.GL30.*;
 
 
 public class DRPolygonRenderer extends DRRenderer {
+    private XYTextureObject mysteryBoxTexture;
+    private XYTextureObject shiningDiamondTexture;
+    private XYTextureObject mineBombTexture;
 
 
     public void initOpenGL(DRWindowManager my_wm) {
         this.my_wm = my_wm;
+
     }
-
-
 
     public void render(){
         int delay = 500;
@@ -42,15 +44,12 @@ public class DRPolygonRenderer extends DRRenderer {
         render(delay, rows, cols);
     }
 
-
     public void render(float radius){
         int delay = 500;
         int rows = (int)(height / (radius * height));
         int cols = (int)(width / (radius * width));
         render(delay, rows, cols);
     }
-
-
 
     private float[] renderTiles(int NUM_ROWS, int NUM_COLS, float spacing){
         int square;
@@ -85,7 +84,7 @@ public class DRPolygonRenderer extends DRRenderer {
             int j = 0;
             while(j < NUM_COLS){
                 x0 = -1.0f + j * widthOfTileMax + spaceRows / 2.0f;
-                y0 = -1.0f + i * heightOfTileMax + spaceCols / 2.0f;
+                y0 = 1.0f - i * heightOfTileMax - spaceCols / 2.0f - heightTiles;
                 x1 = x0;
                 y1 = y0 + heightTiles;
                 x2 = x0 + widthTiles;
@@ -126,14 +125,38 @@ public class DRPolygonRenderer extends DRRenderer {
 
     }
 
+    private float[] makeTextureCoords(int tiles){
+        float[] textureCoords = {
+                0.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
 
+                1.0f, 1.0f,
+                1.0f, 0.0f,
+                0.0f, 0.0f,
+        };
+
+        float[] textCoords = new float[tiles * 6 * 2];
+        int i = 0;
+        while (i < tiles){
+            System.arraycopy(textureCoords, 0, textCoords, i * 12, 12);
+            i++;
+        }
+
+        return textCoords;
+
+    }
 
 
     @Override
     public void render(int FRAME_DELAY, int NUM_ROWS, int NUM_COLS){
         float space = 0.2f;
-        float[] vertices = renderTiles(NUM_ROWS, NUM_COLS, space);
+        int maxMine = 14;
 
+        SIMSBoard board = new SIMSBoard(NUM_ROWS, NUM_COLS, maxMine);
+        CellData[][] ms_board = board.getMs_Board();
+
+        float[] vertices = renderTiles(NUM_ROWS, NUM_COLS, space);
 
         FloatBuffer vertex = BufferUtils.createFloatBuffer(vertices.length);
         vertex.put(vertices).flip();
@@ -141,17 +164,31 @@ public class DRPolygonRenderer extends DRRenderer {
         int vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
-
         int index=0;
         int size = 3;
         boolean normalized = false;
-        int stride = 3*Float.BYTES;
+        int stride = 0;
         int pointer = 0;
+
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
         glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride, pointer);
         glEnableVertexAttribArray(index);
+
+        float[] textureCoordinate = makeTextureCoords(NUM_ROWS * NUM_COLS);
+        FloatBuffer bufferTextCoords = BufferUtils.createFloatBuffer(textureCoordinate.length);
+        bufferTextCoords.put(textureCoordinate).flip();
+
+        index = 1;
+        size = 2;
+
+        int textCoordVBO = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, textCoordVBO);
+        glBufferData(GL_ARRAY_BUFFER, bufferTextCoords, GL_STATIC_DRAW);
+        glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride, pointer);
+        glEnableVertexAttribArray(index);
+
 
         int buffer = 0;
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -160,9 +197,9 @@ public class DRPolygonRenderer extends DRRenderer {
 
 
         DRCamera camera = new DRCamera();
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.6f;
+        float x = 1.0f;
+        float y = 1.0f;
+        float z = 1.0f;
         float w = 1.0f;
         Vector4f COLOR_FACTOR = new Vector4f(x, y, z, w);
 
@@ -174,8 +211,9 @@ public class DRPolygonRenderer extends DRRenderer {
         shaderObj.loadMatrix4f("uViewMatrix", camera.getViewMatrix());
         shaderObj.loadVector4f("COLOR_FACTOR", COLOR_FACTOR);
 
-        int maxMine = 14;
-        SIMSBoard board = new SIMSBoard(NUM_ROWS, NUM_COLS, maxMine);
+        mysteryBoxTexture = new XYTextureObject("src/main/resources/assets/images/MysteryBox_2.png");
+        shiningDiamondTexture = new XYTextureObject("src/main/resources/assets/images/ShiningDiamond_1.png");
+        mineBombTexture = new XYTextureObject("src/main/resources/assets/images/MineBomb_2.png");
 
 
 
@@ -198,12 +236,10 @@ public class DRPolygonRenderer extends DRRenderer {
             glBindVertexArray(0);
 
 
-
             if(XYMouseListener.mouseButtonDown(0) && board.isGameActive()){
                 float XM = XYMouseListener.getX();
                 float YM = XYMouseListener.getY();
 
-                //System.out.println("mouse pressed: " + "XM: " + XM + " YM: " + YM);
                 XYMouseListener.mouseButtonDownReset(0);
 
 
@@ -214,31 +250,28 @@ public class DRPolygonRenderer extends DRRenderer {
                 float maxTileHeight = 2.0f / NUM_ROWS;
 
                 int colIndices = (int)((rowX + 1.0f)/maxTileWidth);
-                int rowIndices = (int)((colY + 1.0f)/maxTileHeight);
+                int rowIndices = (int)((1.0f - colY)/maxTileHeight);
 
                 if (colIndices < 0 || colIndices >= NUM_COLS || rowIndices < 0 || rowIndices >= NUM_ROWS) {
                     continue;
                 }
 
-                float tileLeftSideX = -1.0f + colIndices * maxTileWidth + (maxTileWidth * space) / 2.0f;
-                float tileBottomSideY = -1.0f + rowIndices * maxTileHeight + (maxTileHeight * space) / 2.0f;
-                float tileRightSideX = tileLeftSideX + maxTileWidth - (maxTileWidth * space);
-                float tileTopSideY = tileBottomSideY + maxTileHeight - (maxTileHeight * space);
 
-                CellData[][] ms_board = board.getMs_Board();
-                int rowClick = NUM_ROWS - 1 - rowIndices;
+                int rowClick = rowIndices;
                 int colClick = colIndices;
                 CellData unit = ms_board[rowClick][colClick];
 
-                if (rowX >= tileLeftSideX && rowX <= tileRightSideX && colY >= tileBottomSideY && colY <= tileTopSideY) {
+                if (rowIndices >= 0 && rowIndices < NUM_ROWS && colIndices >= 0 && colIndices < NUM_COLS) {
 
                     if (unit.getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED) {
+                        board.changeCellStatus(rowClick, colClick);
                         unit.setStatus(SlSpot.CELL_STATUS.EXPOSED);
                         if (unit.getType() == SlSpot.CELL_TYPE.MINE) {
                             board.changeGameActive(false);
                             for (int row = 0; row < NUM_ROWS; row++) {
                                 for (int col = 0; col < NUM_COLS; col++) {
                                     ms_board[row][col].setStatus(SlSpot.CELL_STATUS.EXPOSED);
+
                                 }
                             }
                             System.out.printf("\nMouse click at: (%d, %d) Score: %d", rowClick, colClick, board.getCurrentScore());
@@ -249,23 +282,45 @@ public class DRPolygonRenderer extends DRRenderer {
                         }
                     }
                 }
-
-
             }
 
+            glBindVertexArray(vao);
 
+            int row = 0;
+            while (row < NUM_ROWS) {
+                int col = 0;
+                while (col < NUM_COLS){
+                    CellData boardUnits = ms_board[row][col];
+                    XYTextureObject placeCurrentText;
+                    if (boardUnits.getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED) {
+                        placeCurrentText = mysteryBoxTexture;
+                    }
+                    else {
+                        if (boardUnits.getType() == SlSpot.CELL_TYPE.MINE) {
+                            placeCurrentText = mineBombTexture;
+                        }
+                        else{
+                            placeCurrentText = shiningDiamondTexture;
+                        }
+                    }
+                    placeCurrentText.bind_texture();
 
+                    int textureIndex = row * NUM_COLS + col;
+                    int textureVertex = textureIndex * 6;
+                    glDrawArrays(GL_TRIANGLES, textureVertex, 6);
+                    col++;
+                }
+                row++;
+            }
+
+            glBindVertexArray(0);
             my_wm.swapBuffers();
 
         } while (!my_wm.isGlfwWindowClosed());
         glDeleteBuffers(vbo);
+        glDeleteBuffers(textCoordVBO);
         glDeleteVertexArrays(vao);
         my_wm.destroyGlfwWindow();
-
     }
-
-
-
-
 }
 
