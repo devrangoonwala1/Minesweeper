@@ -1,3 +1,10 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 12/7/24
+ * Class: csc133 - 08
+ * Description: This is the DRCellData class which holds the data for status type cell_score and ms_board.
+ */
+
 package pkgBackendEngine;
 
 public class DRCellData {
