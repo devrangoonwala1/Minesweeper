@@ -1,3 +1,10 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 12/7/24
+ * Class: csc133 - 08
+ * Description: This is the XYTextureObject class which helps load the textures into the tiles using the vs_texture_1.glsl and the fs_texture_1.glsl
+ */
+
 package pkgSlRenderer;
 /*
 TODO:
