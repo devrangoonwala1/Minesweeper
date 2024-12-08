@@ -30,7 +30,7 @@ public class SIMSBoard {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 if (ms_board[row][col] == null){
-                    ms_board[row][col] = new CellData(SlSpot.CELL_TYPE.GOLD);
+                    ms_board[row][col] = new CellData(DRSpot.CELL_TYPE.GOLD);
                 }
             }
         }
@@ -41,8 +41,8 @@ public class SIMSBoard {
             int mineRow = random.nextInt(ROWS);
             int mineCol = random.nextInt(COLS);
 
-            if (ms_board[mineRow][mineCol].getType() != SlSpot.CELL_TYPE.MINE){
-                ms_board[mineRow][mineCol].setType(SlSpot.CELL_TYPE.MINE);
+            if (ms_board[mineRow][mineCol].getType() != DRSpot.CELL_TYPE.MINE){
+                ms_board[mineRow][mineCol].setType(DRSpot.CELL_TYPE.MINE);
                 placed_Mine++;
             }
         }
@@ -50,7 +50,7 @@ public class SIMSBoard {
         for (int row = 0; row < ROWS; row++) {
             System.out.println("");
             for (int col = 0; col < COLS; col++) {
-                if (ms_board[row][col].getType() == SlSpot.CELL_TYPE.MINE){
+                if (ms_board[row][col].getType() == DRSpot.CELL_TYPE.MINE){
                     System.out.print("M ");
                 }
                 else{
@@ -71,7 +71,7 @@ public class SIMSBoard {
 
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
-                if (ms_board[row][col].getType() == SlSpot.CELL_TYPE.MINE){
+                if (ms_board[row][col].getType() == DRSpot.CELL_TYPE.MINE){
                     ms_board[row][col].setCell_score(0);
                 }
                 else{
@@ -81,10 +81,10 @@ public class SIMSBoard {
                         int xRow = (row + x[i] + ROWS) % ROWS;
                         int yCol = (col + y[i] + COLS) % COLS;
                         if((xRow >= 0) && (xRow < ROWS) && (yCol >= 0) && (yCol < COLS)){
-                            if (ms_board[xRow][yCol].getType() == SlSpot.CELL_TYPE.MINE) {
+                            if (ms_board[xRow][yCol].getType() == DRSpot.CELL_TYPE.MINE) {
                                 score+=10;
                             }
-                            else if(ms_board[xRow][yCol].getType() == SlSpot.CELL_TYPE.GOLD){
+                            else if(ms_board[xRow][yCol].getType() == DRSpot.CELL_TYPE.GOLD){
                                 score+=5;
                             }
                         }
@@ -117,21 +117,21 @@ public class SIMSBoard {
         }
     }
 
-    public SlSpot.CELL_STATUS getCellStatus(int rows, int cols){
+    public DRSpot.CELL_STATUS getCellStatus(int rows, int cols){
         return ms_board[ROWS][COLS].getStatus();
     }
 
-    public SlSpot.CELL_TYPE changeCellStatus(int rows, int cols){
-        if (ms_board[rows][cols].getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED){
-            ms_board[rows][cols].setStatus(SlSpot.CELL_STATUS.NOT_EXPOSED);
+    public DRSpot.CELL_TYPE changeCellStatus(int rows, int cols){
+        if (ms_board[rows][cols].getStatus() == DRSpot.CELL_STATUS.NOT_EXPOSED){
+            ms_board[rows][cols].setStatus(DRSpot.CELL_STATUS.NOT_EXPOSED);
         }
         else{
-            ms_board[rows][cols].setStatus(SlSpot.CELL_STATUS.EXPOSED);
+            ms_board[rows][cols].setStatus(DRSpot.CELL_STATUS.EXPOSED);
         }
         return ms_board[rows][cols].getType();
     }
 
-    public SlSpot.CELL_TYPE getCellType(int rows, int cols){
+    public DRSpot.CELL_TYPE getCellType(int rows, int cols){
         return ms_board[rows][cols].getType();
     }
 
