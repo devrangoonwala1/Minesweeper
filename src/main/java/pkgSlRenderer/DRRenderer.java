@@ -1,6 +1,6 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 11/27/24
+ * Date: 12/7/24
  * Class: csc133 - 08
  * Description: This DRRenderer class is just an abstract class where the subclass or child classes can extend off of this renderer class
  */
@@ -29,6 +29,10 @@ public abstract class DRRenderer {
     private final float startingPoint = -1.0f;
 
     protected static DRShaderObject shaderObj;
+    protected XYTextureObject mysteryBoxTexture;
+    protected XYTextureObject shiningDiamondTexture;
+    protected XYTextureObject mineBombTexture;
+
 
 
     public int getPolygonMaxVertice() {
