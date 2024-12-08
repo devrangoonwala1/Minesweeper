@@ -1,12 +1,19 @@
+/**
+ * Name: Dev Rangoonwala
+ * Date: 12/7/24
+ * Class: csc133 - 08
+ * Description: This is the DRSIMSBoard class which prints the data such as the gold and mine and points into the output and these are the data that is used for the game.
+ */
+
 package pkgBackendEngine;
 
 
 import java.util.Random;
 
-public class SIMSBoard {
+public class DRSIMSBoard {
 
     private int current_score;
-    private CellData[][]  ms_board;
+    private DRCellData[][]  ms_board;
     private boolean gameActive;
     private int ROWS = 9;
     private int COLS = 7;
@@ -15,11 +22,11 @@ public class SIMSBoard {
 
 
 
-    public SIMSBoard(int ROWS, int COLS, int NUM_MINES) {
+    public DRSIMSBoard(int ROWS, int COLS, int NUM_MINES) {
         this.ROWS = ROWS;
         this.COLS = COLS;
         this.NUM_MINES = NUM_MINES;
-        ms_board = new CellData[ROWS][COLS];
+        ms_board = new DRCellData[ROWS][COLS];
         gameActive = true;
         current_score = 0;
 
@@ -30,7 +37,7 @@ public class SIMSBoard {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 if (ms_board[row][col] == null){
-                    ms_board[row][col] = new CellData(DRSpot.CELL_TYPE.GOLD);
+                    ms_board[row][col] = new DRCellData(DRSpot.CELL_TYPE.GOLD);
                 }
             }
         }
@@ -144,7 +151,7 @@ public class SIMSBoard {
     }
 
 
-    public CellData[][] getMs_Board(){
+    public DRCellData[][] getMs_Board(){
         return ms_board;
     }
 
