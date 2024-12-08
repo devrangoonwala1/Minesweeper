@@ -1,16 +1,16 @@
 /**
  * Name: Dev Rangoonwala
- * Date: 11/27/24
+ * Date: 12/7/24
  * Class: csc133 - 08
- * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the renderTile method which is used to make the necessary shape of the two triangles which then is a square. The render method uses the programmable pipeline to then draw a square and with the use of the shaders file which include the fragment shader and vertex shader it is able to set the colors inside the squares.
+ * Description: This DRPolygonRenderer class is an extension of the DRRenderer class which has the renderTile method which is used to make the necessary shape of the two triangles which then is a square. The render method is used to help get the window working where it will help with showing the tiles and showing the images which corresponds to the tiles and size. The makeTextureCoords method is used to help with the generation of textures using the coordinate system.
  */
 
 package pkgSlRenderer;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import pkgBackendEngine.CellData;
-import pkgBackendEngine.SIMSBoard;
-import pkgBackendEngine.SlSpot;
+import pkgBackendEngine.DRCellData;
+import pkgBackendEngine.DRSIMSBoard;
+import pkgBackendEngine.DRSpot;
 import pkgSlUtils.DRWindowManager;
 import pkgSlUtils.XYMouseListener;
 
@@ -27,9 +27,6 @@ import static org.lwjgl.opengl.GL30.*;
 
 
 public class DRPolygonRenderer extends DRRenderer {
-    private XYTextureObject mysteryBoxTexture;
-    private XYTextureObject shiningDiamondTexture;
-    private XYTextureObject mineBombTexture;
 
 
     public void initOpenGL(DRWindowManager my_wm) {
@@ -153,8 +150,8 @@ public class DRPolygonRenderer extends DRRenderer {
         float space = 0.2f;
         int maxMine = 14;
 
-        SIMSBoard board = new SIMSBoard(NUM_ROWS, NUM_COLS, maxMine);
-        CellData[][] ms_board = board.getMs_Board();
+        DRSIMSBoard board = new DRSIMSBoard(NUM_ROWS, NUM_COLS, maxMine);
+        DRCellData[][] ms_board = board.getMs_Board();
 
         float[] vertices = renderTiles(NUM_ROWS, NUM_COLS, space);
 
@@ -259,18 +256,18 @@ public class DRPolygonRenderer extends DRRenderer {
 
                 int rowClick = rowIndices;
                 int colClick = colIndices;
-                CellData unit = ms_board[rowClick][colClick];
+                DRCellData unit = ms_board[rowClick][colClick];
 
                 if (rowIndices >= 0 && rowIndices < NUM_ROWS && colIndices >= 0 && colIndices < NUM_COLS) {
 
-                    if (unit.getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED) {
+                    if (unit.getStatus() == DRSpot.CELL_STATUS.NOT_EXPOSED) {
                         board.changeCellStatus(rowClick, colClick);
-                        unit.setStatus(SlSpot.CELL_STATUS.EXPOSED);
-                        if (unit.getType() == SlSpot.CELL_TYPE.MINE) {
+                        unit.setStatus(DRSpot.CELL_STATUS.EXPOSED);
+                        if (unit.getType() == DRSpot.CELL_TYPE.MINE) {
                             board.changeGameActive(false);
                             for (int row = 0; row < NUM_ROWS; row++) {
                                 for (int col = 0; col < NUM_COLS; col++) {
-                                    ms_board[row][col].setStatus(SlSpot.CELL_STATUS.EXPOSED);
+                                    ms_board[row][col].setStatus(DRSpot.CELL_STATUS.EXPOSED);
 
                                 }
                             }
@@ -290,13 +287,13 @@ public class DRPolygonRenderer extends DRRenderer {
             while (row < NUM_ROWS) {
                 int col = 0;
                 while (col < NUM_COLS){
-                    CellData boardUnits = ms_board[row][col];
+                    DRCellData boardUnits = ms_board[row][col];
                     XYTextureObject placeCurrentText;
-                    if (boardUnits.getStatus() == SlSpot.CELL_STATUS.NOT_EXPOSED) {
+                    if (boardUnits.getStatus() == DRSpot.CELL_STATUS.NOT_EXPOSED) {
                         placeCurrentText = mysteryBoxTexture;
                     }
                     else {
-                        if (boardUnits.getType() == SlSpot.CELL_TYPE.MINE) {
+                        if (boardUnits.getType() == DRSpot.CELL_TYPE.MINE) {
                             placeCurrentText = mineBombTexture;
                         }
                         else{
