@@ -54,6 +54,7 @@ public class DRSIMSBoard {
             }
         }
 
+        /*
         for (int row = 0; row < ROWS; row++) {
             System.out.println("");
             for (int col = 0; col < COLS; col++) {
@@ -65,6 +66,8 @@ public class DRSIMSBoard {
                 }
             }
         }
+
+         */
 
         System.out.println();
         countTileScore();
@@ -113,6 +116,7 @@ public class DRSIMSBoard {
     public void changeGameActive(boolean gameActive){
         this.gameActive = gameActive;
     }
+
 
 
     public void printCellScore(){
